@@ -64,7 +64,7 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 		
 	endcase	
 	
-	always@(estat or nbit or q or din or regdin or estat_s or i2c_sdat)
+	always@(estat or nbit or q or din or regdin or estat_s /*or i2c_sdat*/)
 	case(estat)
 		idle:
 			begin
@@ -94,7 +94,7 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 			begin
 			ackn = i2c_sdat;
 			scl = q[1] ~^ q[0];
-			if (scl == 0) sda = 1; //Alliberem el bus => posar alta impedància
+			if (scl == 0) sda = 1; //Alliberem el bus => posar alta impedancia
 			end
 			
 		stop:
