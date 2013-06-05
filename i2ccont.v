@@ -61,6 +61,9 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 		
 		turn:	if ((nbit == 5'd12 || nbit == 5'd21 || nbit == 5'd30)) estat_s = idle;
 				else estat_s = turn;
+				
+		default: if (wr_i2c == 1) estat_s = inici;
+				else estat_s = idle;
 		
 	endcase	
 	
@@ -73,14 +76,18 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 			scl = 1;
 			resetcq = 1;
 			idl = 1;
+			ackn = 1;
 			end
 			
 		inici:
 			begin
 			resetcq = 0;
-			if (nbit == 5'd0 && q == 2'd2) sda = 0;
+			if (nbit == 5'd0 && (q == 2'd2 || q == 2'd3)) sda = 0;
+			else sda = 1;
 			if (nbit == 5'd1) scl = q[1] ~^ q[0];
+			else scl = 1;
 			idl = 0;
+			ackn = 1;
 			end
 			
 		tdata:
@@ -88,6 +95,9 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 			scl = q[1] ~^ q[0];
 			if(!((nbit == 5'd1) || (nbit == 5'd10) || (nbit == 5'd19) ) && q == 2) regdin = {regdin[22:0], 1'b0};
 			if ((scl == 0) && (estat_s[0] == 0) ) sda = regdin[23]; //Per evitar glitches en el canvi a akn
+			ackn = 1;
+			idl = 0;
+			resetcq = 0;
 			end
 			
 		akn:
@@ -95,18 +105,36 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 			ackn = i2c_sdat;
 			scl = q[1] ~^ q[0];
 			if (scl == 0) sda = 1; //Alliberem el bus => posar alta impedancia
+			idl = 0;
+			resetcq = 0;
 			end
 			
 		stop:
 			begin
 			if (q == 2'd2) sda = 1;
 			scl = q[1] ~^ q[0];
+			ackn = 1;
+			idl = 0;
+			resetcq = 0;
 			end
 			
 		turn:
 			begin
 			sda = 1;
 			scl = 1;
+			ackn = 1;
+			idl = 0;
+			resetcq = 0;
+			end
+			
+		default:
+			begin
+			regdin = din;
+			sda = 1;
+			scl = 1;
+			resetcq = 1;
+			idl = 1;
+			ackn = 1;
 			end
 			
 	endcase
