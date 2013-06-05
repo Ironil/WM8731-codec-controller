@@ -19,14 +19,14 @@ begin
 sdat_reg = 1;
 clk = 0;
 reset = 1;
-//enable = 0;
+enable = 0;
 
 //datain = 24'b111111111111111111111011;
 datain = 24'b101010100011110011000011;
 start_i2c=0;
 
 #100 reset=0;
-//#100 enable=1;
+#100 enable=1;
 #100 start_i2c=1;
 #10 start_i2c=0;
 #10000 datain = 24'b001110101100001100111100;
@@ -40,7 +40,7 @@ start_i2c=0;
 #100 reset=0;
 
 
-#4000000 $finish(); 
+#400000 $finish(); 
 
 end
 
