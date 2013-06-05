@@ -1,0 +1,55 @@
+module daccc(clk, reset, dac_data_in, adc_data_out, adcdat, m_clk, b_clk, dac_lr_clk, adc_lr_clk, dacdat, flancadcclk);
+
+	input clk, reset, adcdat;
+    input [31:0] dac_data_in;
+    
+    output [31:0] adc_data_out;
+    output m_clk, b_clk, dac_lr_clk, adc_lr_clk, dacdat, flancadcclk;
+    
+    reg [31:0] reg_data_in, shiftreg_data_enviar;
+    wire [31:0] data_enviar;
+    
+    wire flancbclk, flancadcclk, flanc_p_bclk, m_clk, b_clk, dac_lr_clk, adc_lr_clk, dacdat, adcclk;
+    
+    //Generador de mclk i bclk
+    mclkgen m_i (.clk(clk),.reset(reset),.mclk(m_clk),.bclk(b_clk));
+    
+    //Detector de flancs de baixada de b_clk
+    dflancb detfb_bclk_i (.clk(clk), .reset(reset), .in(b_clk), .flanc(flancbclk));
+	
+	//Generador de adcclk. Comptador habilitat pel flanc de baixada de b_clk
+	adcclkgen2 clkgen_i (.clk(clk), .reset(reset), .tin(flancbclk), .adcclk(adcclk));
+    
+    //Detector de flancs de pujada de adcclk per indicar que podem carregar nova dada
+    dflancp detfp_adcclk_i (.clk(clk), .reset(reset), .in(adcclk), .flanc(flancadcclk));
+    
+    //Shift register per enviar les dades
+    shiftreg32b shout (.clk(clk), .reset(reset), .shift(flancbclk), .carrega(flancadcclk), .in(dac_data_in), .regout(dacdat));
+    
+    //Shift register per rebre les dades. La dada és estable quan hi ha un flanc de pujada de bclk
+    //Així que primer posem un detector de flanc de pujada, per indicar quan es podrà llegir la dada
+    dflancp detfp_bclk_i (.clk(clk), .reset(reset), .in(b_clk), .flanc(flanc_p_bclk));
+    shiftreg32bsp shiftin (.clk(clk), .reset(reset), .shift(flanc_p_bclk), .in(adcdat), .missatge(adc_data_out));
+    
+    
+	assign dac_lr_clk = adcclk;
+	assign adc_lr_clk = adcclk;
+	
+	/*
+	assign dacdat = shiftreg_data_enviar[31];
+	
+	assign data_enviar = flancadcclk ? {shiftreg_data_enviar[30:0], 1'b0} : shiftreg_data_enviar;
+	
+	always@(posedge clk)
+	if (reset)
+		begin
+		reg_data_in <= 32'd0;
+		end
+	else
+		begin
+		reg_data_in <= dac_data_in;
+		shiftreg_data_enviar <= data_enviar;
+		end
+	*/
+
+endmodule
