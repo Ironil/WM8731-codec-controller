@@ -1,14 +1,12 @@
 `timescale 1ns/100ps
 
 module sys_i2c_fm (i2c_sdat, i2c_sclk);
-  inout i2c_sdat;
-  input i2c_sclk;
-    
-  reg sda;
+	inout i2c_sdat;
+	input i2c_sclk;
   
-  
-  
-  
+	assign i2c_sdat = (I_codec_avalon.I_controlador.i2cc_i.estat == 3'd3) ? 0 : 
+	                       (I_codec_avalon.I_controlador.i2cc_i.sda == 1) ? 1'b1 : i2c_sdat; 
+
 task waitstart;
 /* 
 El MF espera el senyal d'inici: i2c_sdat = 0 mentre i2c_sclk = 1
@@ -95,6 +93,7 @@ task listen_acknowledge;
 				i = i+1;
 			end
 			
+			/*
 			//Acknowledge
 			@(negedge i2c_sclk)
 			sda <= 0;
@@ -103,6 +102,7 @@ task listen_acknowledge;
 			//Free bus after ack bit
 			@(negedge i2c_sclk)
 			sda <= 1;
+			*/
 		end
 	
 	end
@@ -122,7 +122,7 @@ task listen_acknowledge;
 				
 				i = i+1;
 		end
-		
+		/*
 		$display("Failing to acknowledge at %t!",temps[i]);
 		//NoAcknowledge
 			@(negedge i2c_sclk)
@@ -131,7 +131,7 @@ task listen_acknowledge;
 			//Free bus after ack bit
 			@(negedge i2c_sclk)
 			sda <= 1;
-		
+		*/
 	end
 endtask
 
