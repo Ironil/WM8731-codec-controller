@@ -1,3 +1,5 @@
+`timescale 1ns/100ps
+
 //`include "global.v"
 `include "D:\\Dropbox\\codec\\global.v"
 

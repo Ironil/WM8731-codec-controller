@@ -88,8 +88,8 @@ controlador I_controlador(
 		.adc_fifo_empty       (adc_fifo_empty),
 		.dac_fifo_in          (dac_fifo_in),
 		.wr_dac_fifo          (wr_dac_fifo),
-		.dac_fifo_full        (dac_fifo_full),
-		.adc_fifo_full        (adc_fifo_full)
+		.dac_fifo_full        (dac_fifo_full)
+		//.adc_fifo_full        (adc_fifo_full)   NO
 		);
     
     

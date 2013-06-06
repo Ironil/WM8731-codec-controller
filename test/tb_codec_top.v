@@ -47,9 +47,9 @@ wire m_clk, b_clk, dac_lr_clk, adc_lr_clk, dacdat, adcdat,  wr_i2c,  rd_adc_fifo
    
    sys_clk50MHz_fm I_sys_clk50MHz_fm(.Clk(clk));
 
-   sys_rst_fm I_sys_rst_fm(.Rst_n (reset));
+   sys_rst_fm I_sys_rst_fm(.Rst (reset));
    
-   sys_i2c_fm I_sys_i2c_fm(.wr_i2c(wr_i2c), .i2c_sdat(i2c_sdat), .i2c_sclk(i2c_sclk));
+   sys_i2c_fm I_sys_i2c_fm(.i2c_sdat(i2c_sdat), .i2c_sclk(i2c_sclk));
 
    master_bus_fm I_master_bus_fm(
     .Clk                  (clk),

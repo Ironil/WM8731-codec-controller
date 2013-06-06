@@ -25,6 +25,11 @@ begin
    //`CODECI2C.enablei2c;
    `CLK50M.waitCycles(3);
    `SYSRST.rstOff;
+   `CLK50M.waitCycles(3);
+
+
+   
+   `CLK50M.waitCycles(3);
    
 	fork
 	`I2CFM.waitstart;

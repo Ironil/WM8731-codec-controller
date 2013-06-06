@@ -1,19 +1,14 @@
 `timescale 1ns/100ps
 
-module sys_i2c_fm (clk, reset, i2c_sdat, i2c_sclk);
+module sys_i2c_fm (i2c_sdat, i2c_sclk);
   inout i2c_sdat;
   input i2c_sclk;
-  input clk, reset;
-  
+    
   reg sda;
   
-	//Buffer tristate
-	assign i2c_sdat = sda ? 1'bz : 1'b0;
-	
-	always@(reset)
-	if (reset) sda <= 1;
-	
-	
+  
+  
+  
 task waitstart;
 /* 
 El MF espera el senyal d'inici: i2c_sdat = 0 mentre i2c_sclk = 1
