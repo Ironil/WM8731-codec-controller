@@ -23,7 +23,9 @@
 * program except for archival purposes is prohibited.
 *
 *********1*********2*********3*********4*********5*********6*********7*********/
-`include "global.v"
+//`include "global.v"
+
+`include "D:\\Dropbox\\codec\\global.v"
  
 module codec_slave_interface(
     Clk                  ,

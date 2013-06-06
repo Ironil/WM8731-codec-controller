@@ -1,6 +1,6 @@
 `timescale 1ns/100ps
 
-module sys_i2c_fm (clk,reset,i2c_sdat, i2c_sclk);
+module sys_i2c_fm (clk, reset, i2c_sdat, i2c_sclk);
   inout i2c_sdat;
   input i2c_sclk;
   input clk, reset;
@@ -63,8 +63,8 @@ task measuresclk;
 	i = i+1;
 	end
 	
-	frequency = 1/(period[1]*1e-10);
-	$display("Measured frequency = %f Hz", frequency);
+	frequency = 1/(period[1]*1e-7);
+	$display("Measured frequency = %f KHz", frequency);
 	end
 endtask
 
@@ -93,7 +93,7 @@ task listen_acknowledge;
 				if (received_data[23-i] === 1'bz) received_data[23-i] = 1'b1;
 				if (received_data[23-i] !== data_sent[23-i]) begin
 					$display("At %t: Transmission error, bit %d lost! Received %b, should be %b",temps[i],i,received_data[23-i],data_sent[23-i]);
-					testi2ctasks.error = testi2ctasks.error+1;
+					tb_codec_top.error = tb_codec_top.error+1;
 				end
 				else $display("At %t: received %b, ok",temps[i],received_data[23-i]);
 				
@@ -121,7 +121,7 @@ task listen_acknowledge;
 				if (received_data[23-i] === 1'bz) received_data[23-i] = 1'b1;
 				if (received_data[23-i] !== data_sent[23-i]) begin
 					$display("At %t: Transmission error, bit %d lost! Received %b, should be %b",temps[i],i,received_data[23-i],data_sent[23-i]);
-					testi2ctasks.error = testi2ctasks.error+1;
+					tb_codec_top.error = tb_codec_top.error+1;
 				end
 				else $display("At %t: received %b, ok",temps[i],received_data[23-i]);
 				

@@ -5,6 +5,9 @@ module tb_codec_top();
    wire [23:0] i2c_packet;
    wire [31:0] adc_fifo_out;
    wire [31:0] dac_fifo_in;
+   
+   //La variable error en la que anirem sumant els errors
+  integer error;
      
  
    
@@ -14,8 +17,8 @@ module tb_codec_top();
 
    sys_clk50MHz_fm I_sys_clk50MHz_fm(.Clk(clk));
 
-   sys_rst_fm I_sys_rst_fm(.Rst_n (reset));
-   sys_i2c_fm I_sys_i2c_fm(.wr_i2c(wr_i2c), .i2c_packet(i2c_packet), .i2c_sdat(i2c_sdat));
+   sys_rst_fm I_sys_rst_fm(.Rst (reset));
+   sys_i2c_fm I_sys_i2c_fm(.clk(clk), .reset(reset), .i2c_sclk(i2c_sclk), .i2c_sdat(i2c_sdat));
 
 
 endmodule

@@ -1,3 +1,5 @@
+`timescale 1ns/100ps
+
 `define SYSRST            I_tb_codec_top.I_sys_rst_fm
 `define CLK50M            I_tb_codec_top.I_sys_clk50MHz_fm
 `define CODECI2C          I_tb_codec_top.I_sys_i2c_fm
@@ -14,10 +16,9 @@ initial
 begin
   
    `SYSRST.rstOn;
-   `CODECI2C.disablei2c;
+   //`CODECI2C.disablei2c;
    `CLK50M.waitCycles(3);   
-   `CODECI2C.enablei2c;
-   `CODECI2C.i2cpacket;
+   //`CODECI2C.enablei2c;
    `CLK50M.waitCycles(3);
    `SYSRST.rstOff;
    

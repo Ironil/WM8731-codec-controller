@@ -31,10 +31,9 @@ module codec_top
    assign sample_tick = dac_done_tick;
    
    //  i2c 
-   i2c i2c_controller
+   i2cc i2c_controller
       (.clk(clk), .reset(reset), .wr_i2c(wr_i2c), .din(i2c_packet),
-       .i2c_sclk(i2c_sclk), .i2c_sdat(i2c_sdat), .i2c_idle(i2c_idle),
-       .i2c_done_tick(), .i2c_fail());
+       .i2c_sclk(i2c_sclk), .i2c_sdat(i2c_sdat), .i2c_idle(i2c_idle));
        
    //  codec dac/adc
    adc_dac data_acces_controller

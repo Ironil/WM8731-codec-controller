@@ -1,4 +1,5 @@
-`include "global.v"
+//`include "global.v"
+`include "D:\\Dropbox\\codec\\global.v"
 
 module master_bus_fm(
     Clk,

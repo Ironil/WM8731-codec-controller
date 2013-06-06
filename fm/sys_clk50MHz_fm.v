@@ -23,6 +23,7 @@
 * program except for archival purposes is prohibited.
 *
 *********1*********2*********3*********4*********5*********6*********7*********/
+`timescale 1ns/100ps
 
 module sys_clk50MHz_fm (                  
     Clk                   
