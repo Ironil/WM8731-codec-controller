@@ -25,15 +25,15 @@
 *********1*********2*********3*********4*********5*********6*********7*********/
 
 module sys_rst_fm (                  
-    Rst_n                   
+    Rst                   
     );
 
-output          Rst_n            ;   // Generated reset
-reg             Rst_n            ; 
+output          Rst            ;   // Generated reset
+reg             Rst            ; 
 
 initial
  begin
-   Rst_n = 1;
+   Rst = 1;
  end
  
 // -----------------------------------------------------------------------------
@@ -41,7 +41,7 @@ initial
 // Asserts reset (Rst_n=0 & Rst=1)
 // -----------------------------------------------------------------------------
 task rstOn; begin
-    Rst_n=1;
+    Rst=1;
 end
 endtask // rstOn
 
@@ -50,7 +50,7 @@ endtask // rstOn
 // Deasserts reset (Rst_n=0 & Rst=1)
 // -----------------------------------------------------------------------------
 task rstOff; begin
-    Rst_n=0;
+    Rst=0;
 end
 endtask // rstOff
 

@@ -8,7 +8,7 @@ tri1 sdat;
 reg [23:0] datain;
 
 
-i2cc i2cc_i(.clk(clk), .reset(reset), .din(datain), .wr_i2c(start_i2c), .i2c_sclk(sclk), .i2c_sdat(sdat), .i2c_idle(idle),.enable(enable));
+i2cc i2cc_i(.clk(clk), .reset(reset), .din(datain), .wr_i2c(start_i2c), .i2c_sclk(sclk), .i2c_sdat(sdat), .i2c_idle(idle));
 
 assign sdat = sdat_reg ? 1'bz : 1'b0;
    
