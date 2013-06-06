@@ -93,7 +93,7 @@ task listen_acknowledge;
 				if (received_data[23-i] === 1'bz) received_data[23-i] = 1'b1;
 				if (received_data[23-i] !== data_sent[23-i]) begin
 					$display("At %t: Transmission error, bit %d lost! Received %b, should be %b",temps[i],i,received_data[23-i],data_sent[23-i]);
-					tb_codec_top.error = tb_codec_top.error+1;
+					test_codec_top.error = test_codec_top.error+1;
 				end
 				else $display("At %t: received %b, ok",temps[i],received_data[23-i]);
 				
@@ -121,7 +121,7 @@ task listen_acknowledge;
 				if (received_data[23-i] === 1'bz) received_data[23-i] = 1'b1;
 				if (received_data[23-i] !== data_sent[23-i]) begin
 					$display("At %t: Transmission error, bit %d lost! Received %b, should be %b",temps[i],i,received_data[23-i],data_sent[23-i]);
-					tb_codec_top.error = tb_codec_top.error+1;
+					test_codec_top.error = test_codec_top.error+1;
 				end
 				else $display("At %t: received %b, ok",temps[i],received_data[23-i]);
 				
