@@ -24,15 +24,17 @@ module fifo
    always @(posedge clk)
       if (wr_en)
          array_reg[w_ptr_reg] <= w_data;
+         
    // register file read operation
    assign r_data = array_reg[r_ptr_reg];
+   
    // write enabled only when FIFO is not full
    assign wr_en = wr & ~full_reg;
 
    // fifo control logic
    // register for read and write pointers
-   always @(posedge clk, negedge reset)
-      if (!reset)
+   always @(posedge clk, posedge !reset)
+      if (reset)
          begin
             w_ptr_reg <= 0;
             r_ptr_reg <= 0;

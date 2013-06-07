@@ -22,9 +22,15 @@ begin
    
    `CLK50M.waitCycles(3);   
    `SYSRST.rstOff;
-   `CLK50M.waitCycles(3); 
-   `MASTER.setDACaudio(24'h842124);
+   `CLK50M.waitCycles(10); 
+   `MASTER.seti2cpacket(24'h842124);
    `CLK50M.waitCycles(10);
+   `MASTER.setDACaudio(32'h24842124);
+   `CLK50M.waitCycles(10);
+   `MASTER.llegiradcfifoout;
+   `ADCFM.adcwrite(32'h24842124);
+   
+   
    /*
    fork
    `DACFM.dacread
@@ -41,7 +47,7 @@ begin
    */
    
        
-#1000000 $finish(); 
+#10000000 $finish(); 
 
 end
 
