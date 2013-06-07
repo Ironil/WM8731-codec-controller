@@ -1,8 +1,12 @@
 `timescale 1ns/100ps
 
-module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
+module adc_fm(m_clk, b_clk, adc_lr_clk, adcdat);
 	
-	input m_clk, b_clk, dac_lr_clk, dacdat;
+	input m_clk, b_clk, adc_lr_clk;
+	
+	output adcdat;
+	
+	reg adcdat_reg;
 	
 	
 	task measuresclk;
@@ -12,7 +16,7 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 	begin
 		mesura_m_clk(frequency_m);
 		mesura_b_clk(frequency_b);
-		mesura_dac_lr_clk(frequency_lr);
+		mesura_adc_lr_clk(frequency_lr);
 	end
 	join
 	begin
@@ -71,7 +75,7 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 	join
 	endtask
 	
-	task mesura_dac_lr_clk;
+	task mesura_adc_lr_clk;
 	input real frequency_lr;
 	time t1, t2;
 	
@@ -85,9 +89,9 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
       end
       begin
          // m_clk
-         @(posedge dac_lr_clk);
+         @(posedge adc_lr_clk);
          t1 = $realtime;
-         @(posedge dac_lr_clk);
+         @(posedge adc_lr_clk);
          t2 = $realtime;
          
          frequency_lr = 1/((t2-t1)*1e-7);
@@ -95,31 +99,30 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 	join
 	endtask
 	
-	task dacread;
+	task adcwrite;
 		
-		input integer ndades;		//1 dada = 1 cicle canal dreta i esquerra
+		input reg [31:0] data;
 		
 		integer i;
 		
-		output reg [15:0] received_data_l, received_data_r;
-		
 		begin
 		i = 0;
-		repeat(ndades) begin
-			@(posedge dac_lr_clk)
-			repeat(16) begin
+		
+		@(posedge adc_lr_clk)
+		repeat(32) begin
 			@(negedge b_clk)
-				received_data_l [15 -i] = dacdat;
-				
+				adcdat_reg = data[31-i];
 				i = i+1;
-			end
-			i = 0;
-			repeat(16) begin
-			@(negedge b_clk)
-				received_data_l [15 -i] = dacdat;
-				i  = i+1;
-			end
 		end
 		end
 	endtask
+	
+	
+	initial begin
+	adcdat_reg = 0;
+	
+	end
+	
+	assign adcdat = adcdat_reg;
+	
 endmodule
