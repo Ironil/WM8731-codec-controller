@@ -3,8 +3,8 @@
 `define SYSRST            I_tb_codec_top.I_sys_rst_fm
 `define CLK50M            I_tb_codec_top.I_sys_clk50MHz_fm
 `define I2CFM             I_tb_codec_top.I_sys_i2c_fm
-`define TOP				           I_tb_codec_top		//t: Enable & disable wr_i2c
-//`define CODECDaC          I_tb_codec_top.I_codec_top.data_acces_controller
+`define DACFM             I_tb_codec_top.I_dac_fm
+`define ADCFM             I_tb_codec_top.I_adc_fm
 
 
 module test_codec_top();
@@ -13,9 +13,6 @@ module test_codec_top();
   integer error;
   
 tb_codec_top I_tb_codec_top();
-
-
-
 
 initial
 begin
@@ -27,6 +24,7 @@ begin
    `CLK50M.waitCycles(3); 
    
    `CLK50M.waitCycles(3);
+   
    
 	fork
 	`I2CFM.waitstart;
