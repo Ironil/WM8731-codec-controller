@@ -3,7 +3,7 @@
 `define SYSRST            I_tb_codec_top.I_sys_rst_fm
 `define CLK50M            I_tb_codec_top.I_sys_clk50MHz_fm
 `define I2CFM             I_tb_codec_top.I_sys_i2c_fm
-`define TOP				  I_tb_codec_top		//t: Enable & disable wr_i2c
+`define TOP				           I_tb_codec_top		//t: Enable & disable wr_i2c
 //`define CODECDaC          I_tb_codec_top.I_codec_top.data_acces_controller
 
 
@@ -21,13 +21,13 @@ initial
 begin
   
    `SYSRST.rstOn;
-   `TOP.disablei2c;
+   
    `CLK50M.waitCycles(3);   
    `SYSRST.rstOff;
    `CLK50M.waitCycles(3); 
-   `TOP.enablei2c;
+   
    `CLK50M.waitCycles(3);
-   `TOP.disablei2c;
+   
 	fork
 	`I2CFM.waitstart;
 	`I2CFM.measuresclk;

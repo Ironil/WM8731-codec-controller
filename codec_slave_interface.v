@@ -23,9 +23,9 @@
 * program except for archival purposes is prohibited.
 *
 *********1*********2*********3*********4*********5*********6*********7*********/
-//`include "global.v"
+`include "global.v"
 
-`include "D:\\Dropbox\\codec\\global.v"
+//`include "D:\\Dropbox\\codec\\global.v"
  
 module codec_slave_interface(
     Clk                  ,
@@ -45,7 +45,11 @@ module codec_slave_interface(
     i2c_idle             ,
     adc_fifo_out         ,
     i2c_packet           ,
-    dac_fifo_in          
+    dac_fifo_in          ,
+    wr_i2c               ,
+    rd_adc_fifo          ,
+    adc_fifo_empty       ,
+    wr_dac_fifo          
     );
 
 input           Clk                 ; // Clock
@@ -66,11 +70,14 @@ output          slave_irq           ;
 
 input           adc_fifo_full       ;
 input           dac_fifo_full       ;
+input           adc_fifo_empty      ;
 input           i2c_idle            ;
 input   [31:0]  adc_fifo_out        ;
 output  [23:0]  i2c_packet          ;
 output  [31:0]  dac_fifo_in         ;
-
+output          wr_i2c              ;
+output          rd_adc_fifo         ;
+output          wr_dac_fifo         ;
 
 
 wire            valid_write         ; // Write operations are allowd when slave_write and slave_chipselect are asserted.
@@ -83,14 +90,14 @@ wire            selADCAUDIO         ; // Indicates that ADC_ AUDIOregister is se
 
 
 
-
 reg     [31:0]  I2C_command         ; // Register I2C_DATA_AUDIO
 reg     [31:0]  status_audio        ; // Register STATUS_AUDIO
 reg     [31:0]  dac_data            ; // Register DAC_AUDIO
 reg     [31:0]  adc_data            ; // Register ADC_AUDIO
 
-
-
+wire            wr_i2c              ;
+wire            rd_adc_fifo         ;
+wire            wr_dac_fifo         ;   
 
 reg             loadBurstCount      ;
 reg             enableBCount        ;
@@ -116,13 +123,17 @@ assign selADCAUDIO       = (slave_address == `ADDR_ADC_AUDIO      ? 1'b1 : 1'b0)
 assign i2c_packet = I2C_command[23:0];
 always @(posedge Clk or posedge Rst_n)
   if (!Rst_n) I2C_command <= 32'h0; 
-  else if (selI2CDATAAUDIO && valid_write) I2C_command <= slave_writedata;
+  else if (selI2CDATAAUDIO && valid_write) 
+  begin
+    //wr_i2c <=1;
+  I2C_command <= slave_writedata;
+end
 
 //STATUS_AUDIO
 
 always @(posedge Clk or posedge Rst_n)
   if (!Rst_n) status_audio <= 32'h0;
-  else status_audio <= {29'h0, adc_fifo_full, dac_fifo_full, i2c_idle};
+  else status_audio <= {28'h0, adc_fifo_empty, adc_fifo_full, dac_fifo_full, i2c_idle};
   
 //DAC_ AUDIO
 
@@ -130,14 +141,22 @@ assign dac_fifo_in = dac_data;
 
 always @(posedge Clk or posedge Rst_n)
   if (!Rst_n) dac_data <= 32'h0;
-  else if (selDACAUDIO && valid_write) dac_data <= slave_writedata;
-    
+  else if (selDACAUDIO && valid_write)
+  begin
+   //wr_dac_fifo <= 1;
+   dac_data <= slave_writedata;
+  end
+       
 
 //ADC_ AUDIO
 
 always @(posedge Clk or posedge Rst_n)
   if (!Rst_n) adc_data <= 32'h0;
-  else adc_data <= adc_fifo_out;
+  else 
+  begin
+  //7rd_adc_fifo <=1;
+  adc_data <= adc_fifo_out;
+  end
 
 
 //Read
@@ -146,6 +165,12 @@ assign slave_readdata = (!valid_read  ? 32'h0      :
                          selSTATUSAUDIO  ? status_audio     :
                          selDACAUDIO    ? dac_data     :
                          selADCAUDIO    ? adc_data     : 32'h0);
+                         
+                         
+assign wr_i2c      = valid_write & selI2CDATAAUDIO & i2c_idle;     //Habilita l'escriptura al i2c quan el i2c esta idle.
+assign rd_adc_fifo = valid_read  & selADCAUDIO & !adc_fifo_empty;  //Habilita la lesctura quan la FIFOadc no esta buida (sino no hi ha res a llegir).
+assign wr_dac_fifo = valid_write & selDACAUDIO & !dac_fifo_full;   //Habilita l'escriptura de la FIFOdac quan la fifo no esta plena.
+
 
 //assign RdFifoRx = valid_read  & selDataRx & !RxEmpty;
 

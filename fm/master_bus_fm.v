@@ -1,7 +1,7 @@
 `timescale 1ns/100ps
 
-//`include "global.v"
-`include "D:\\Dropbox\\codec\\global.v"
+`include "global.v"
+//`include "D:\\Dropbox\\codec\\global.v"
 
 module master_bus_fm(
     Clk,
