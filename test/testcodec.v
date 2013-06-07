@@ -5,6 +5,7 @@
 `define I2CFM             I_tb_codec_top.I_sys_i2c_fm
 `define DACFM             I_tb_codec_top.I_dac_fm
 `define ADCFM             I_tb_codec_top.I_adc_fm
+`define MASTER            I_tb_codec_top.I_master_bus_fm
 
 
 module test_codec_top();
@@ -22,22 +23,40 @@ begin
    `CLK50M.waitCycles(3);   
    `SYSRST.rstOff;
    `CLK50M.waitCycles(3); 
-   
-   `CLK50M.waitCycles(3);
-   
-   
+   `MASTER.setDACaudio(24'h842124);
+   `CLK50M.waitCycles(10);
+   /*
+   fork
+   `DACFM.dacread
+   compara(
+   join
+   *(¡/
+   /*
 	fork
 	`I2CFM.waitstart;
 	`I2CFM.measuresclk;
 	`I2CFM.listen_acknowledge(1,24'b101010100011110011000011);
 	join
 	`I2CFM.waitend;
-   
+   */
    
        
 #1000000 $finish(); 
 
+end
 
-end  
+	task compara;
+	  input reg [31:0] d1, d2;
+	  begin
+    if (d1 != d2) begin
+                 $display("Error, transmitted data %h is not the expected value %h", d1, d2);
+                 error = error +1;
+                 end
+  else $display("Correct, transmitted data %h is the expected value %h", d1, d2);    
+	
+	end
+	endtask
+
+
   
 endmodule 

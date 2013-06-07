@@ -144,7 +144,7 @@ always @(posedge Clk or posedge Rst_n)
   else if (selDACAUDIO && valid_write)
   begin
    //wr_dac_fifo <= 1;
-   dac_data <= slave_writedata;
+   dac_data = slave_writedata;
   end
        
 

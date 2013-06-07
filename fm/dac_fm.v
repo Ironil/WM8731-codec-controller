@@ -116,7 +116,7 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 			i = 0;
 			repeat(16) begin
 			@(negedge b_clk)
-				received_data_l [15 -i] = dacdat;
+				received_data_r [15 -i] = dacdat;
 				i  = i+1;
 			end
 		end
