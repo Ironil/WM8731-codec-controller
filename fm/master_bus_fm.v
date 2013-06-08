@@ -133,6 +133,24 @@ task llegiradcfifoout;
   end
 endtask
 
+task waitFifoADCNoFull;
+  
+  reg   full;
+  
+  begin
+  full = 0;
+  
+  while (full)
+   begin
+     simpleRead(`ADDR_STATUS_AUDIO);
+     full = readData[2];
+     $display("\\  ADC FIFO full flag: %d",full);
+   end
+   $display("\\  ADC FIFO no full");
+  end
+endtask
+
+
 /*
 task enableRxDUT;
   

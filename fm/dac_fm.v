@@ -99,13 +99,13 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 	
 		task dacread;
 		
-		input integer ndades;		//1 dada = 1 cicle canal dreta i esquerra		
+		//input integer ndades;		//1 dada = 1 cicle canal dreta i esquerra		
 		integer i;
 		reg [31:0] received_dac;
 				
 		begin
 		i = 0;
-		repeat(ndades) begin
+		//repeat(ndades) begin
 		@(posedge dac_lr_clk)
 		repeat(32) begin
 		@(negedge b_clk)
@@ -114,7 +114,7 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 				
 				end
 				$display("DAC: received dacdat %h", received_dac);
-		end
+		//end
 		 
 		end
 	endtask
