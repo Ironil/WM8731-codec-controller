@@ -1,7 +1,7 @@
 module fifo
    #(
     parameter B=32, // number of bits in a word
-              W=4  // number of address bits
+              W=3  // number of address bits
    )
    (
     input wire clk, reset,

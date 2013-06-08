@@ -20,15 +20,9 @@ begin
   
    `SYSRST.rstOn;
    
-   `CLK50M.waitCycles(3);   
+   `CLK50M.waitCycles(10);   
    `SYSRST.rstOff;
-   `CLK50M.waitCycles(10); 
-   `MASTER.seti2cpacket(24'h842124);
-   `CLK50M.waitCycles(10);
-   `MASTER.setDACaudio(32'h24842124);
-   `CLK50M.waitCycles(10);
-   `MASTER.llegiradcfifoout;
-   `ADCFM.adcwrite(32'h24842124);
+   testdac;
    
    
    /*
@@ -51,6 +45,71 @@ begin
 
 end
 
+/*task checkReceivedDataMASTER;
+
+input[31:0] dataToReceive;
+
+ begin
+   `MASTER.simpleRead(`ADDR_DAC_AUDIO);
+   if (dataToReceive != `MASTER.llegiradcfifoout) begin
+                                            $display("Error, transmitted data %h is not the expected value %h", `MASTER.llegiradcfifoout, dataToReceive);
+                                            error = error +1;
+                                           end
+   else $display("Correct, transmitted data %h is the expected value %h", `MASTER.llegiradcfifoout, dataToReceive);
+  end
+  
+endtask
+*/
+task transmitADC_and_check;
+
+  input[31:0] dataToTransmit;
+  
+  begin
+   `ADCFM.adcwrite(dataToTransmit);
+   checkReceivedDataMASTER(dataToTransmit);
+  end
+ 
+endtask
+
+
+task checkReceivedDataDAC;
+
+input[31:0] dataToReceive;
+
+ begin
+   if (dataToReceive != `DACFM.dacread) begin
+                                            $display("Error, transmitted data %h is not the expected value %h", `DACFM.dacread, dataToReceive);
+                                            error = error +1;
+                                           end
+   else $display("Correct, transmitted data %h is the expected value %h", `DACFM.dacread, dataToReceive);
+ end
+endtask
+  
+
+task transmitDAC_and_check;
+
+  input[31:0] dataToTransmit;
+  
+  begin
+   `MASTER.setDACaudio(dataToTransmit);
+   checkReceivedDataDAC(dataToTransmit);
+  end
+endtask
+
+
+
+task check_error;
+
+ begin
+   if (error != 0) $display("Test unsuccessful, %d errors", error);
+   else $display("Test successful, %d errors", error);
+ end
+endtask
+
+
+
+/*
+
 	task compara;
 	  input reg [31:0] d1, d2;
 	  begin
@@ -63,6 +122,15 @@ end
 	end
 	endtask
 
+*/
+
+task testdac;
+  begin
+    $display("Starting test DAC");
+    transmitDAC_and_check(32'h24842124);
+    check_error;
+  end
+ endtask
 
   
 endmodule 

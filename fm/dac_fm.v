@@ -5,6 +5,7 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 	input m_clk, b_clk, dac_lr_clk, dacdat;
 	
 	
+	
 	task measuresclk;
 	real frequency_m, frequency_b, frequency_lr;
 	begin
@@ -95,10 +96,33 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 	join
 	endtask
 	
+	
+		task dacread;
+		
+		input integer ndades;		//1 dada = 1 cicle canal dreta i esquerra		
+		integer i;
+		reg [31:0] received_dac;
+				
+		begin
+		i = 0;
+		repeat(ndades) begin
+		@(posedge dac_lr_clk)
+		repeat(32) begin
+		@(negedge b_clk)
+				received_dac[31-i] = dacdat;
+				i = i+1;
+				
+				end
+				$display("DAC: received dacdat %h", received_dac);
+		end
+		 
+		end
+	endtask
+
+			
+			/*
 	task dacread;
-		
 		input integer ndades;		//1 dada = 1 cicle canal dreta i esquerra
-		
 		integer i;
 		
 		output reg [15:0] received_data_l, received_data_r;
@@ -122,4 +146,6 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 		end
 		end
 	endtask
+	*/
+	
 endmodule

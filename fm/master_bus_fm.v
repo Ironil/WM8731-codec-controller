@@ -108,7 +108,7 @@ reg   [31:0] dataToWrite;
     //without modifying the other bits of the register.
     dataToWrite = dataToWrite | i2cpacket;
     simpleWrite(dataToWrite, `ADDR_I2C_DATA_AUDIO);
-    $display("\\  DUT: i2cpacket set to %d", i2cpacket);
+    $display("Master: i2cpacket set to %h", i2cpacket);
   end
   
 endtask
@@ -118,11 +118,18 @@ task setDACaudio;
 
 input [31:0] dac_data;
 reg   [31:0] dataToWrite;
- 
   begin
     dataToWrite = dac_data;
     simpleWrite(dataToWrite, `ADDR_DAC_AUDIO);
-    $display("\\  DUT: DAC audio set to %d", dac_data);
+    //$display("Master: DAC audio set to %h", dac_data);
+  end
+endtask
+
+task llegiradcfifoout;
+
+  begin
+    simpleRead(`ADDR_ADC_AUDIO);
+    //$display("Master: read ADC audio %h", readData);
   end
 endtask
 

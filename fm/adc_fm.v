@@ -100,28 +100,26 @@ module adc_fm(m_clk, b_clk, adc_lr_clk, adcdat);
 	endtask
 	
 	task adcwrite;
-		
-		input reg [31:0] data;
-		
+			
+		input reg [31:0] data;		
 		integer i;
-		
+				
 		begin
 		i = 0;
-		
 		@(posedge adc_lr_clk)
 		repeat(32) begin
-			@(negedge b_clk)
+		@(posedge b_clk)
 				adcdat_reg = data[31-i];
 				i = i+1;
 		end
 		end
 	endtask
+
 	
-	
-	initial begin
+	initial
+	 begin
 	adcdat_reg = 0;
-	
-	end
+		end
 	
 	assign adcdat = adcdat_reg;
 	

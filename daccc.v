@@ -1,15 +1,17 @@
-module daccc(clk, reset, dac_data_in, adc_data_out, adcdat, m_clk, b_clk, dac_lr_clk, adc_lr_clk, dacdat, flancadcclk);
+module daccc(clk, reset, dac_data_in, adc_data_out, adcdat, m_clk, b_clk, dac_lr_clk, adc_lr_clk, dacdat, flancadcclk,dac_fifo_empty,adc_fifo_full);
 
-	input clk, reset, adcdat;
+	 input clk, reset, adcdat;
     input [31:0] dac_data_in;
-    
+    input dac_fifo_empty, adc_fifo_full;
     output [31:0] adc_data_out;
     output m_clk, b_clk, dac_lr_clk, adc_lr_clk, dacdat, flancadcclk;
     
-    reg [31:0] reg_data_in, shiftreg_data_enviar;
+    reg [31:0]  shiftreg_data_enviar;
     wire [31:0] data_enviar;
+    reg [31:0] reg_data_in;
     
     wire flancbclk, flancadcclk, flanc_p_bclk, m_clk, b_clk, dac_lr_clk, adc_lr_clk, dacdat, adcclk;
+    wire [31:0] adc_data_out;
     
     //Generador de mclk i bclk
     mclkgen m_i (.clk(clk),.reset(reset),.mclk(m_clk),.bclk(b_clk));
@@ -28,6 +30,7 @@ module daccc(clk, reset, dac_data_in, adc_data_out, adcdat, m_clk, b_clk, dac_lr
     
     //Shift register per rebre les dades. La dada és estable quan hi ha un flanc de pujada de bclk
     //Així que primer posem un detector de flanc de pujada, per indicar quan es podrà llegir la dada
+    
     dflancp detfp_bclk_i (.clk(clk), .reset(reset), .in(b_clk), .flanc(flanc_p_bclk));
     shiftreg32bsp shiftin (.clk(clk), .reset(reset), .shift(flanc_p_bclk), .in(adcdat), .missatge(adc_data_out));
     
@@ -35,11 +38,14 @@ module daccc(clk, reset, dac_data_in, adc_data_out, adcdat, m_clk, b_clk, dac_lr
 	assign dac_lr_clk = adcclk;
 	assign adc_lr_clk = adcclk;
 	
-	/*
+ 
+  
 	assign dacdat = shiftreg_data_enviar[31];
+	
 	
 	assign data_enviar = flancadcclk ? {shiftreg_data_enviar[30:0], 1'b0} : shiftreg_data_enviar;
 	
+
 	always@(posedge clk)
 	if (reset)
 		begin
@@ -50,6 +56,6 @@ module daccc(clk, reset, dac_data_in, adc_data_out, adcdat, m_clk, b_clk, dac_lr
 		reg_data_in <= dac_data_in;
 		shiftreg_data_enviar <= data_enviar;
 		end
-	*/
+ 	
 
 endmodule
