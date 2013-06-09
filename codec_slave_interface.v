@@ -97,7 +97,9 @@ reg     [31:0]  adc_data            ; // Register ADC_AUDIO
 
 wire            wr_i2c              ;
 wire            rd_adc_fifo         ;
-wire            wr_dac_fifo         ;   
+wire            wr_dac_fifo         ;
+
+reg 			wr_i2c_reg; 
 
 reg             wr_dac_fiforeg      ;
 reg             rd_adc_fiforeg      ;
@@ -167,7 +169,7 @@ assign slave_readdata = (!valid_read  ? 32'h0      :
                          selADCAUDIO    ? adc_data     : 32'h0);
                          
                          
-assign wr_i2c      = valid_write & selI2CDATAAUDIO & i2c_idle;     //Habilita l'escriptura al i2c quan el i2c esta idle.
+//assign wr_i2c      = valid_write & selI2CDATAAUDIO & i2c_idle;     //Habilita l'escriptura al i2c quan el i2c esta idle.
 assign rd_adc_fifo = valid_read  & selADCAUDIO & !adc_fifo_empty;  //Habilita la lectura quan la FIFOadc no esta buida (sino no hi ha res a llegir).
 //assign wr_dac_fifo = valid_write & selDACAUDIO & !dac_fifo_full;   //Habilita l'escriptura de la FIFOdac quan la fifo no esta plena.
 
@@ -176,6 +178,11 @@ assign slave_irq = 1;
 
 
 //Delay
+always @(posedge Clk or posedge Rst_n)
+if (Rst_n) wr_i2c_reg = 1'b0;
+else wr_i2c_reg = valid_write & selI2CDATAAUDIO & i2c_idle;
+
+assign wr_i2c = wr_i2c_reg;
 
 always @(posedge Clk or posedge Rst_n)
   if (Rst_n) wr_dac_fiforeg = 1'b0;
