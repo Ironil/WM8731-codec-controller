@@ -16,8 +16,8 @@ module test_codec_top();
   integer error;
   
   
-  reg [31:0] dades_adc [0:5];
-  reg [191:0] dades_a_enviar;
+  reg [31:0] dades_adc [0:11];
+  reg [383:0] dades_a_enviar;
   
   
 tb_codec_top I_tb_codec_top();
@@ -30,19 +30,26 @@ begin
    `CLK50M.waitCycles(10);   
    `SYSRST.rstOff;
    
-  dades_adc[0] =32'h24842214;
-  dades_adc[1] =32'h24842204;
-  dades_adc[2] =32'h24842194;
-  dades_adc[3] =32'h24842184;
-  dades_adc[4] =32'h24842174;
-  dades_adc[5] =32'h24842164;
+  dades_adc[0] =$random($random);
+  dades_adc[1] =$random($random);
+  dades_adc[2] =$random($random);
+  dades_adc[3] =$random($random);
+  dades_adc[4] =$random($random);
+  dades_adc[5] =$random($random);
+  dades_adc[6] =$random($random);
+  dades_adc[7] =$random($random);
+  dades_adc[8] =$random($random);
+  dades_adc[9] =$random($random);
+  dades_adc[10] =$random($random);
+  dades_adc[11] =$random($random);
   
-	dades_a_enviar = {dades_adc[0],dades_adc[1],dades_adc[2],dades_adc[3],dades_adc[4],dades_adc[5]};
-   //fork
+	dades_a_enviar = {dades_adc[0],dades_adc[1],dades_adc[2],dades_adc[3],dades_adc[4],dades_adc[5],dades_adc[6],dades_adc[7],
+	                    dades_adc[8],dades_adc[9],dades_adc[10],dades_adc[11]};
+   testadc2;
    testadc(dades_a_enviar);
    testdac;
-   //join
-   //testi2c;
+   testi2c;
+   `ADCFM.measuresclk;
    check_error;
    
       
@@ -52,8 +59,8 @@ end
 
 
 task ADC_get_ready;
-	input [191:0] dades_enviar;
-	reg [31:0] dades_adc [0:5];
+	input [383:0] dades_enviar;
+	reg [31:0] dades_adc [0:11];
 	integer i;
 	
 	
@@ -65,12 +72,20 @@ task ADC_get_ready;
 	dades_adc[3] =dades_enviar[127:96];
 	dades_adc[4] =dades_enviar[159:128];
 	dades_adc[5] =dades_enviar[191:160];
+	dades_adc[6] =dades_enviar[223:192];
+	dades_adc[7] =dades_enviar[255:224];
+	dades_adc[8] =dades_enviar[287:256];
+	dades_adc[9] =dades_enviar[319:288];
+	dades_adc[10] =dades_enviar[351:320];
+	dades_adc[11] =dades_enviar[383:352];
+	
+	
 	
 	i = 0;
 	`ADCFM.adcwrite(32'hFFFFAAAA);
 	
 	fork
-		repeat(6) begin
+		repeat(12) begin
 			`ADCFM.adcwrite(dades_adc[i]);
 			i = i+1;
 		end
@@ -79,7 +94,7 @@ task ADC_get_ready;
 		end
 	join
 	i = 0;
-	repeat(5) begin
+	repeat(11) begin
 		checkReceivedADC(dades_adc[i]);
 		i = i+1;
 	end
@@ -174,27 +189,31 @@ task testdac;
  endtask
  
 task testadc;
-input reg [191:0] dades_adc;
+input reg [383:0] dades_adc;
   begin
     $display("Starting test ADC");
     //`ADCFM.measuresclk;
     ADC_get_ready(dades_adc);
-    /*transmitADC_and_check(32'h24842214);
-    transmitADC_and_check(32'h24842204);
-    transmitADC_and_check(32'h24842194);
-    transmitADC_and_check(32'h24842184);
-    transmitADC_and_check(32'h24842174);
-    transmitADC_and_check(32'h24842164);
-    transmitADC_and_check(32'h24842154);
-    `SYSRST.rstOn;
-    `CLK50M.waitCycles(10);    
-    `SYSRST.rstOff;
-    transmitADC_and_check(32'h24842144);
-    transmitADC_and_check(32'h24842134);
-    transmitADC_and_check(32'h24842124);
-    transmitADC_and_check(32'h24842114);
-    transmitADC_and_check(32'h24842104);    
-    //check_error;*/
+    check_error;
+  end
+ endtask
+
+task testadc2;
+  begin
+    $display("Starting test ADC 2");
+    //`ADCFM.measuresclk;
+    transmitADC_and_check($random($random));
+    transmitADC_and_check($random($random));
+    transmitADC_and_check($random($random));
+    transmitADC_and_check($random($random));
+    transmitADC_and_check($random($random));
+    transmitADC_and_check($random($random));
+    transmitADC_and_check($random($random));
+    transmitADC_and_check($random($random));
+    transmitADC_and_check($random($random));
+    transmitADC_and_check($random($random));
+    transmitADC_and_check($random($random));   
+    check_error;
   end
  endtask
 
