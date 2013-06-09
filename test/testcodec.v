@@ -45,27 +45,11 @@ begin
    //testi2c;
    check_error;
    
-   
-       
+      
 #1000000 $finish(); 
 
 end
 
-task checkReceivedADC;
-
-input[31:0] dataToReceive;
-
- begin
-  
-     `MASTER.simpleRead(`ADDR_ADC_AUDIO);
- if (dataToReceive != `MASTER.readData) begin
-                                            $display("ADC:Error, transmitted data %h is not the expected value %h", `MASTER.readData, dataToReceive);
-                                            error = error +1;
-                                           end
-   else $display("ADC:Correct, transmitted data %h is the expected value %h", `MASTER.readData, dataToReceive);
-  end
-  
-endtask
 
 task ADC_get_ready;
 	input [191:0] dades_enviar;
@@ -102,6 +86,23 @@ task ADC_get_ready;
 	end
 endtask
 
+task checkReceivedADC;
+
+input[31:0] dataToReceive;
+
+ begin
+  
+     `MASTER.simpleRead(`ADDR_ADC_AUDIO);
+ if (dataToReceive != `MASTER.readData) begin
+                        $display("ADC: Error, transmitted data %h is not the expected value %h", `MASTER.readData, dataToReceive);
+                        error = error +1;
+                        end
+   else $display("ADC: Correct, transmitted data %h is the expected value %h", `MASTER.readData, dataToReceive);
+  end
+  
+endtask
+
+
 task transmitADC_and_check;
 
   input[31:0] dataToTransmit;
@@ -124,20 +125,6 @@ task transmitDAC_and_check;
   end
 endtask
 
-/*
-task checkReceivedI2C;
-
-input[23:0] dataToReceive;
-
- begin
-   if (dataToReceive != `I2CFM.listen_acknowledge) begin
-                                            $display("Error, transmitted data %h is not the expected value %h", `I2CFM.listen_acknowledge, dataToReceive);
-                                            error = error +1;
-                                           end
-   else $display("Correct, transmitted data %h is the expected value %h", `I2CFM.listen_acknowledge, dataToReceive);
- end
-endtask
-  */
 
 task transmitI2C_and_check;
 
@@ -146,49 +133,51 @@ task transmitI2C_and_check;
   begin
    `MASTER.seti2cpacket(dataToTransmit);
    `I2CFM.listen_acknowledge(1,dataToTransmit);
-   //checkReceivedI2C(dataToTransmit);
-  end
+   end
 endtask
 
 
-
 task check_error;
-
  begin
    if (error != 0) $display("Test unsuccessful, %d errors", error);
    else $display("Test successful, %d errors", error);
  end
 endtask
 
-
-
 task testdac;
   begin
     $display("Starting test DAC");
     //`DACFM.measuresclk;
-    transmitDAC_and_check(32'h24842129);
-    transmitDAC_and_check(32'h24842128);
-    transmitDAC_and_check(32'h24842127);
-    transmitDAC_and_check(32'h24842126);
-    transmitDAC_and_check(32'h24842125);
-    transmitDAC_and_check(32'h24842124);
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random)); 
     `SYSRST.rstOn;
     `CLK50M.waitCycles(10);    
     `SYSRST.rstOff;
-    transmitDAC_and_check(32'h24842123);    
-    transmitDAC_and_check(32'h24842122);
-    transmitDAC_and_check(32'h24842121);
-    transmitDAC_and_check(32'h24842120);
-    //check_error;
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random));
+    transmitDAC_and_check($random($random)); 
+    check_error;
   end
  endtask
- 
  
 task testadc;
 input reg [191:0] dades_adc;
   begin
     $display("Starting test ADC");
-    `ADCFM.measuresclk;
+    //`ADCFM.measuresclk;
     ADC_get_ready(dades_adc);
     /*transmitADC_and_check(32'h24842214);
     transmitADC_and_check(32'h24842204);
@@ -209,12 +198,31 @@ input reg [191:0] dades_adc;
   end
  endtask
 
-
 task testi2c;
   begin
     $display("Starting test I2C");
-    transmitI2C_and_check(32'h24842124);
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    `SYSRST.rstOn;
+    `CLK50M.waitCycles(10);   
+    `SYSRST.rstOff;
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
+    transmitI2C_and_check($random($random));
     check_error;
   end
  endtask
-endmodule
+ 
+endmodule 
