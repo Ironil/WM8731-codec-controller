@@ -15,6 +15,11 @@ module test_codec_top();
    //La variable error en la que anirem sumant els errors
   integer error;
   
+  
+  reg [31:0] dades_adc [0:5];
+  reg [191:0] dades_a_enviar;
+  
+  
 tb_codec_top I_tb_codec_top();
 
 initial
@@ -24,8 +29,17 @@ begin
    
    `CLK50M.waitCycles(10);   
    `SYSRST.rstOff;
+   
+  dades_adc[0] =32'h24842214;
+  dades_adc[1] =32'h24842204;
+  dades_adc[2] =32'h24842194;
+  dades_adc[3] =32'h24842184;
+  dades_adc[4] =32'h24842174;
+  dades_adc[5] =32'h24842164;
+  
+	dades_a_enviar = {dades_adc[0],dades_adc[1],dades_adc[2],dades_adc[3],dades_adc[4],dades_adc[5]};
    //fork
-   testadc;
+   testadc(dades_a_enviar);
    testdac;
    //join
    //testi2c;
@@ -53,6 +67,40 @@ input[31:0] dataToReceive;
   
 endtask
 
+task ADC_get_ready;
+	input [191:0] dades_enviar;
+	reg [31:0] dades_adc [0:5];
+	integer i;
+	
+	
+	begin
+	
+	dades_adc[0] =dades_enviar[31:0];
+	dades_adc[1] =dades_enviar[63:32];
+	dades_adc[2] =dades_enviar[95:64];
+	dades_adc[3] =dades_enviar[127:96];
+	dades_adc[4] =dades_enviar[159:128];
+	dades_adc[5] =dades_enviar[191:160];
+	
+	i = 0;
+	`ADCFM.adcwrite(32'hFFFFAAAA);
+	
+	fork
+		repeat(6) begin
+			`ADCFM.adcwrite(dades_adc[i]);
+			i = i+1;
+		end
+		while(`MASTER.readData != 32'hFFFFAAAA) begin
+			`MASTER.simpleRead(`ADDR_ADC_AUDIO);
+		end
+	join
+	i = 0;
+	repeat(6) begin
+		checkReceivedADC(dades_adc[i]);
+		i = i+1;
+	end
+	end
+endtask
 
 task transmitADC_and_check;
 
@@ -137,10 +185,12 @@ task testdac;
  
  
 task testadc;
+input reg [191:0] dades_adc;
   begin
     $display("Starting test ADC");
-    //`ADCFM.measuresclk;
-    transmitADC_and_check(32'h24842214);
+    `ADCFM.measuresclk;
+    ADC_get_ready(dades_adc);
+    /*transmitADC_and_check(32'h24842214);
     transmitADC_and_check(32'h24842204);
     transmitADC_and_check(32'h24842194);
     transmitADC_and_check(32'h24842184);
@@ -155,7 +205,7 @@ task testadc;
     transmitADC_and_check(32'h24842124);
     transmitADC_and_check(32'h24842114);
     transmitADC_and_check(32'h24842104);    
-    //check_error;
+    //check_error;*/
   end
  endtask
 
@@ -167,4 +217,4 @@ task testi2c;
     check_error;
   end
  endtask
-endmodule 
+endmodule
