@@ -26,6 +26,7 @@ begin
    `SYSRST.rstOff;
    testadc;
    testdac;
+   testi2c;
    
    
        
@@ -87,6 +88,32 @@ task transmitDAC_and_check;
   end
 endtask
 
+/*
+task checkReceivedI2C;
+
+input[23:0] dataToReceive;
+
+ begin
+   if (dataToReceive != `I2CFM.listen_acknowledge) begin
+                                            $display("Error, transmitted data %h is not the expected value %h", `I2CFM.listen_acknowledge, dataToReceive);
+                                            error = error +1;
+                                           end
+   else $display("Correct, transmitted data %h is the expected value %h", `I2CFM.listen_acknowledge, dataToReceive);
+ end
+endtask
+  */
+
+task transmitI2C_and_check;
+
+  input[23:0] dataToTransmit;
+  
+  begin
+   `MASTER.seti2cpacket(dataToTransmit);
+   `I2CFM.listen_acknowledge(1,dataToTransmit);
+   //checkReceivedI2C(dataToTransmit);
+  end
+endtask
+
 
 
 task check_error;
@@ -108,6 +135,7 @@ task testdac;
     transmitDAC_and_check(32'h24842126);
     transmitDAC_and_check(32'h24842125);
     transmitDAC_and_check(32'h24842124);
+    
     transmitDAC_and_check(32'h24842123);
     transmitDAC_and_check(32'h24842122);
     transmitDAC_and_check(32'h24842121);
@@ -139,24 +167,8 @@ task testadc;
 
 task testi2c;
   begin
-    $display("Starting test DAC");
-    
-   /*
-   fork
-   `DACFM.dacread
-   compara(
-   join
-   *(¡/
-   /*
-	fork
-	`I2CFM.waitstart;
-	`I2CFM.measuresclk;
-	`I2CFM.listen_acknowledge(1,24'b101010100011110011000011);
-	join
-	`I2CFM.waitend;
-   */
-   
-    transmitDAC_and_check(32'h24842124);
+    $display("Starting test I2C");
+    transmitI2C_and_check(32'h24842124);
     check_error;
   end
  endtask
