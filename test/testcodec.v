@@ -24,13 +24,16 @@ begin
    
    `CLK50M.waitCycles(10);   
    `SYSRST.rstOff;
+   //fork
    testadc;
    testdac;
-   testi2c;
+   //join
+   //testi2c;
+   check_error;
    
    
        
-#10000000 $finish(); 
+#1000000 $finish(); 
 
 end
 
@@ -39,12 +42,13 @@ task checkReceivedADC;
 input[31:0] dataToReceive;
 
  begin
-   `MASTER.simpleRead(`ADDR_ADC_AUDIO);
-   if (dataToReceive != `MASTER.readData) begin
-                                            $display("Error, transmitted data %h is not the expected value %h", `MASTER.readData, dataToReceive);
+  
+     `MASTER.simpleRead(`ADDR_ADC_AUDIO);
+ if (dataToReceive != `MASTER.readData) begin
+                                            $display("ADC:Error, transmitted data %h is not the expected value %h", `MASTER.readData, dataToReceive);
                                             error = error +1;
                                            end
-   else $display("Correct, transmitted data %h is the expected value %h", `MASTER.readData, dataToReceive);
+   else $display("ADC:Correct, transmitted data %h is the expected value %h", `MASTER.readData, dataToReceive);
   end
   
 endtask
@@ -61,20 +65,6 @@ task transmitADC_and_check;
  
 endtask
 
-/*
-task checkReceivedDataDAC;
-
-input[31:0] dataToReceive;
-
- begin
-   if (dataToReceive != `DACFM.dacread) begin
-                                            $display("Error, transmitted data %h is not the expected value %h", `DACFM.dacread, dataToReceive);
-                                            error = error +1;
-                                           end
-   else $display("Correct, transmitted data %h is the expected value %h", `DACFM.dacread, dataToReceive);
- end
-endtask
-  */
 
 task transmitDAC_and_check;
 
@@ -82,9 +72,7 @@ task transmitDAC_and_check;
   
   begin
    `MASTER.setDACaudio(dataToTransmit);
-   $display("DAC: %h",dataToTransmit);
-   `DACFM.dacread;
-   //checkReceivedDataDAC(dataToTransmit);
+   `DACFM.dacread(dataToTransmit);
   end
 endtask
 
@@ -129,18 +117,21 @@ endtask
 task testdac;
   begin
     $display("Starting test DAC");
+    //`DACFM.measuresclk;
     transmitDAC_and_check(32'h24842129);
     transmitDAC_and_check(32'h24842128);
     transmitDAC_and_check(32'h24842127);
     transmitDAC_and_check(32'h24842126);
     transmitDAC_and_check(32'h24842125);
     transmitDAC_and_check(32'h24842124);
-    
-    transmitDAC_and_check(32'h24842123);
+    `SYSRST.rstOn;
+    `CLK50M.waitCycles(10);    
+    `SYSRST.rstOff;
+    transmitDAC_and_check(32'h24842123);    
     transmitDAC_and_check(32'h24842122);
     transmitDAC_and_check(32'h24842121);
     transmitDAC_and_check(32'h24842120);
-    check_error;
+    //check_error;
   end
  endtask
  
@@ -148,6 +139,7 @@ task testdac;
 task testadc;
   begin
     $display("Starting test ADC");
+    //`ADCFM.measuresclk;
     transmitADC_and_check(32'h24842214);
     transmitADC_and_check(32'h24842204);
     transmitADC_and_check(32'h24842194);
@@ -155,12 +147,15 @@ task testadc;
     transmitADC_and_check(32'h24842174);
     transmitADC_and_check(32'h24842164);
     transmitADC_and_check(32'h24842154);
+    `SYSRST.rstOn;
+    `CLK50M.waitCycles(10);    
+    `SYSRST.rstOff;
     transmitADC_and_check(32'h24842144);
     transmitADC_and_check(32'h24842134);
     transmitADC_and_check(32'h24842124);
     transmitADC_and_check(32'h24842114);
     transmitADC_and_check(32'h24842104);    
-    check_error;
+    //check_error;
   end
  endtask
 

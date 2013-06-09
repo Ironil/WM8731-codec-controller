@@ -40,6 +40,14 @@ module fifo
             r_ptr_reg <= 0;
             full_reg <= 1'b0;
             empty_reg <= 1'b1;
+            array_reg[0] <= 32'b0;
+            array_reg[1] <= 32'b0;
+            array_reg[2] <= 32'b0;
+            array_reg[3] <= 32'b0;
+            array_reg[4] <= 32'b0;
+            array_reg[5] <= 32'b0;
+            array_reg[6] <= 32'b0;
+            array_reg[7] <= 32'b0;
          end
       else
          begin
