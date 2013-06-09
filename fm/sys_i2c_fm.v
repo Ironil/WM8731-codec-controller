@@ -3,9 +3,18 @@
 module sys_i2c_fm (i2c_sdat, i2c_sclk);
 	inout i2c_sdat;
 	input i2c_sclk;
-  
-	assign i2c_sdat = (I_codec_avalon.I_controlador.i2cc_i.estat == 3'd3) ? 0 : 
-	                       (I_codec_avalon.I_controlador.i2cc_i.sda == 1) ? 1'b1 : i2c_sdat; 
+	
+	wire akn;
+	reg akn_reg;
+
+//Si sda en i2cc = 1, el bus a 1 o 0 segons akn. Si 0, 0.
+	assign i2c_sdat = (I_codec_avalon.I_controlador.i2cc_i.sda) ? akn : 0 ;
+	
+	assign akn = akn_reg;
+	
+	initial begin
+	akn_reg = 1;
+	end
 
 task waitstart;
 /* 
@@ -93,16 +102,16 @@ task listen_acknowledge;
 				i = i+1;
 			end
 			
-			/*
+			
 			//Acknowledge
 			@(negedge i2c_sclk)
-			sda <= 0;
+			akn_reg = 0;
 			
 			
 			//Free bus after ack bit
 			@(negedge i2c_sclk)
-			sda <= 1;
-			*/
+			akn_reg = 1;
+			
 		end
 	
 	end
@@ -122,16 +131,16 @@ task listen_acknowledge;
 				
 				i = i+1;
 		end
-		/*
+		
 		$display("Failing to acknowledge at %t!",temps[i]);
 		//NoAcknowledge
 			@(negedge i2c_sclk)
-			sda <= 1;
+			akn_reg = 1;
 			
 			//Free bus after ack bit
 			@(negedge i2c_sclk)
-			sda <= 1;
-		*/
+			akn_reg = 1;
+		
 	end
 endtask
 
