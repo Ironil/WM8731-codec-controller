@@ -151,7 +151,7 @@ El MF espera el senyal de fi
       begin
          // Wait on end
          @(posedge i2c_sdat);
-         if (i2c_sclk == 0) $display("%t : END signal received", $time);
+         if (i2c_sclk == 1) $display("%t : END signal received", $time);
          else begin
          $display("%t : Bad END signal", $time);
          $finish();         

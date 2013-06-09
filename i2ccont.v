@@ -14,7 +14,7 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 	inout i2c_sdat;
 	
 	reg [2:0] estat, estat_s;
-	reg [23:0] regdin, regdin_buf;
+	reg [23:0] regdin;
 	reg sda, scl, resetcq, idl, ackn;
 	
 	wire [1:0] q;
@@ -33,7 +33,7 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 		
 	assign i2c_sclk = scl;
 
-	//Per fer buffer tristate
+	//Transistor sobre el bus.
 	assign i2c_sdat = sda ? 1'bz : 1'b0;
 	
 	assign i2c_idle = idl;
@@ -67,13 +67,7 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 		
 	endcase	
 	
-	always@(estat or nbit or q or din or regdin or estat_s /*or i2c_sdat*/)
-	begin
-	regdin_buf = regdin;
-	regdin = regdin_buf;
-	
-	sda = regdin[23];
-		
+	always@(estat or nbit or q or din or regdin or estat_s or i2c_sdat)
 	case(estat)
 		idle:
 			begin
@@ -88,8 +82,8 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 		inici:
 			begin
 			resetcq = 0;
-			if ((nbit == 5'd0 && (q == 2'd2 || q == 2'd3)) || (nbit == 5'd1 && (q == 2'd0 || q == 2'd1))) sda = 0;
-			else sda = 1;
+			if (nbit == 5'd0 && (q == 2'd0 || q == 2'd1)) sda = 1;
+			else sda = 0;
 			if (nbit == 5'd1) scl = q[1] ~^ q[0];
 			else scl = 1;
 			idl = 0;
@@ -99,8 +93,8 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 		tdata:
 			begin
 			scl = q[1] ~^ q[0];
-			if(!((nbit == 5'd1) || (nbit == 5'd10) || (nbit == 5'd19) ) && q == 2'd2) regdin = {regdin_buf[22:0], 1'b0};
-			if ((scl == 0) && (estat_s[0] == 0) ) sda = regdin[23]; //Per evitar glitches en el canvi a akn Necessari?
+			if(!((nbit == 5'd1) || (nbit == 5'd10) || (nbit == 5'd19) ) && q == 2) regdin = {regdin[22:0], 1'b0};
+			if ((scl == 0) && (estat_s[0] == 0) ) sda = regdin[23]; //Per evitar glitches en el canvi a akn
 			ackn = 1;
 			idl = 0;
 			resetcq = 0;
@@ -110,7 +104,7 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 			begin
 			ackn = i2c_sdat;
 			scl = q[1] ~^ q[0];
-			if (q == 2'd1) sda = 0; //En acabar ack, transició a 0
+			if ((nbit == 5'd10 || nbit == 5'd19 || nbit == 5'd28) && q != 2'd0) sda = 0;
 			else sda = 1;
 			idl = 0;
 			resetcq = 0;
@@ -118,8 +112,9 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 			
 		stop:
 			begin
-			sda = 1;
 			scl = q[1] ~^ q[0];
+			if (scl == 1) sda = 1;
+			else sda = 0;
 			ackn = 1;
 			idl = 0;
 			resetcq = 0;
@@ -145,5 +140,4 @@ module i2cc(clk, reset, din, wr_i2c, i2c_idle, i2c_sclk, i2c_sdat);
 			end
 			
 	endcase
-	end
 endmodule
