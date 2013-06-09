@@ -95,7 +95,7 @@ task ADC_get_ready;
 		end
 	join
 	i = 0;
-	repeat(6) begin
+	repeat(5) begin
 		checkReceivedADC(dades_adc[i]);
 		i = i+1;
 	end

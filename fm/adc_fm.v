@@ -14,9 +14,9 @@ module adc_fm(m_clk, b_clk, adc_lr_clk, adcdat);
 	begin
 	fork
 	begin
-		mesura_m_clk(12500000);
+		mesura_m_clk(frequency_m);
 		mesura_b_clk(frequency_b);
-		mesura_adc_lr_clk(frequency_lr);		
+		mesura_adc_lr_clk(frequency_lr);
 	end
 	join
 	begin
@@ -28,7 +28,7 @@ module adc_fm(m_clk, b_clk, adc_lr_clk, adcdat);
 	endtask
 	
 	task mesura_m_clk;
-	input real frequency_m;
+	output real frequency_m;
 	time t1, t2;
 	
 	fork : timeout
@@ -47,12 +47,13 @@ module adc_fm(m_clk, b_clk, adc_lr_clk, adcdat);
          t2 = $realtime;
          
          frequency_m = 1/((t2-t1)*1e-7);
+         disable timeout;
       end
 	join
 	endtask
 	
 	task mesura_b_clk;
-	input real frequency_b;
+	output real frequency_b;
 	time t1, t2;
 	
 	fork : timeout
@@ -71,18 +72,19 @@ module adc_fm(m_clk, b_clk, adc_lr_clk, adcdat);
          t2 = $realtime;
          
          frequency_b = 1/((t2-t1)*1e-7);
+         disable timeout;
       end
 	join
 	endtask
 	
 	task mesura_adc_lr_clk;
-	input real frequency_lr;
+	output real frequency_lr;
 	time t1, t2;
 	
 	fork : timeout
       begin
          // Timeout check
-         #100000
+         #100000000
          $display("%t : timeout, no START received", $time);
          $finish();
          disable timeout;
@@ -95,13 +97,14 @@ module adc_fm(m_clk, b_clk, adc_lr_clk, adcdat);
          t2 = $realtime;
          
          frequency_lr = 1/((t2-t1)*1e-7);
+         disable timeout;
       end
 	join
 	endtask
 	
 	task adcwrite;
 			
-		input reg [31:0] data;		
+		input reg [31:0] data;
 		integer i;
 				
 		begin
@@ -114,7 +117,6 @@ module adc_fm(m_clk, b_clk, adc_lr_clk, adcdat);
 		end
 		end
 	endtask
-
 	
 	initial
 	 begin
@@ -122,5 +124,6 @@ module adc_fm(m_clk, b_clk, adc_lr_clk, adcdat);
 		end
 		
 	assign adcdat = adcdat_reg;
+	
 	
 endmodule

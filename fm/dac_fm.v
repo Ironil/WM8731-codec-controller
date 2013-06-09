@@ -24,7 +24,7 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 	endtask
 	
 	task mesura_m_clk;
-	input real frequency_m;
+	output real frequency_m;
 	time t1, t2;
 	
 	fork : timeout
@@ -43,12 +43,13 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
          t2 = $realtime;
          
          frequency_m = 1/((t2-t1)*1e-7);
+         disable timeout;
       end
 	join
 	endtask
 	
 	task mesura_b_clk;
-	input real frequency_b;
+	output real frequency_b;
 	time t1, t2;
 	
 	fork : timeout
@@ -67,12 +68,13 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
          t2 = $realtime;
          
          frequency_b = 1/((t2-t1)*1e-7);
+         disable timeout;
       end
 	join
 	endtask
 	
 	task mesura_dac_lr_clk;
-	input real frequency_lr;
+	output real frequency_lr;
 	time t1, t2;
 	
 	fork : timeout
@@ -91,6 +93,7 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
          t2 = $realtime;
          
          frequency_lr = 1/((t2-t1)*1e-7);
+         disable timeout;
       end
 	join
 	endtask
@@ -124,38 +127,4 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 		 
 		end
 	endtask
-
-
-	
-			
-			/*
-	task dacread;
-		input integer ndades;		//1 dada = 1 cicle canal dreta i esquerra
-		integer i;
-		
-		output reg [15:0] received_data_l, received_data_r;
-		
-		begin
-		i = 0;
-		repeat(ndades) begin
-			@(posedge dac_lr_clk)
-			repeat(16) begin
-			@(negedge b_clk)
-				received_data_l [15 -i] = dacdat;
-				
-				i = i+1;
-			end
-			i = 0;
-			repeat(16) begin
-			@(negedge b_clk)
-				received_data_r [15 -i] = dacdat;
-				i  = i+1;
-			end
-		end
-		end
-	endtask
-	*/
-	
-	
-	
 endmodule
