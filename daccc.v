@@ -6,10 +6,6 @@ module daccc(clk, reset, dac_data_in, adc_data_out, adcdat, m_clk, b_clk, dac_lr
     output [31:0] adc_data_out;
     output m_clk, b_clk, dac_lr_clk, adc_lr_clk, dacdat, flancadcclk;
     
-    reg [31:0]  shiftreg_data_enviar;
-    wire [31:0] data_enviar;
-    reg [31:0] reg_data_in;
-    
     wire flancbclk, flancadcclk, flanc_p_bclk, m_clk, b_clk, dac_lr_clk, adc_lr_clk, dacdat, adcclk;
     wire [31:0] adc_data_out;
     
@@ -38,24 +34,6 @@ module daccc(clk, reset, dac_data_in, adc_data_out, adcdat, m_clk, b_clk, dac_lr
 	assign dac_lr_clk = adcclk;
 	assign adc_lr_clk = adcclk;
 	
- 
-  
-	assign dacdat = shiftreg_data_enviar[31];
-	
-	
-	assign data_enviar = flancadcclk ? {shiftreg_data_enviar[30:0], 1'b0} : shiftreg_data_enviar;
-	
-
-	always@(posedge clk)
-	if (reset)
-		begin
-		reg_data_in <= 32'd0;
-		end
-	else
-		begin
-		reg_data_in <= dac_data_in;
-		shiftreg_data_enviar <= data_enviar;
-		end
  	
 
 endmodule
