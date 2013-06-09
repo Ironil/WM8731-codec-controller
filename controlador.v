@@ -18,16 +18,16 @@ module controlador(clk, reset, i2c_sclk, i2c_sdat, adcdat,
 	wire [31:0] dac_data_in, adc_data_out;
 	wire dac_done_tick,dac_fifo_empty;
 	
-	
+	/*
 	//ADC_DAC
 	adc_dac I_adc_dac(.clk(clk), .reset(reset), .dac_data_in(dac_data_in), .adc_data_out(adc_data_out), .adcdat(adcdat), .m_clk(m_clk),
 	 .b_clk(b_clk), .dac_lr_clk(dac_lr_clk), .adc_lr_clk(adc_lr_clk), .dacdat(dacdat), .load_done_tick(dac_done_tick));
+	*/
 	
-	/*
 	//ADC_DAC
 	daccc adc_dac (.clk(clk), .reset(reset), .dac_data_in(dac_data_in), .adc_data_out(adc_data_out), .adcdat(adcdat), .m_clk(m_clk),
 	 .b_clk(b_clk), .dac_lr_clk(dac_lr_clk), .adc_lr_clk(adc_lr_clk), .dacdat(dacdat), .flancadcclk(dac_done_tick),.dac_fifo_empty(dac_fifo_empty),.adc_fifo_full(adc_fifo_full));
-	*/
+	
 	 
 	//I2C
 	i2cc i2cc_i(.clk(clk), .reset(reset), .din(i2c_packet), .wr_i2c(wr_i2c), .i2c_sclk(i2c_sclk), .i2c_sdat(i2c_sdat), .i2c_idle(i2c_idle));
