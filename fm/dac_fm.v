@@ -2,10 +2,9 @@
 
 module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 	
-	input m_clk, b_clk, dac_lr_clk, dacdat;
+	input m_clk, b_clk, dac_lr_clk,dacdat;
 	
-	
-	
+		
 	task measuresclk;
 	real frequency_m, frequency_b, frequency_lr;
 	begin
@@ -101,8 +100,10 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 		
 		//input integer ndades;		//1 dada = 1 cicle canal dreta i esquerra		
 		integer i;
+		input [31:0] data_sent;
+		
 		reg [31:0] received_dac;
-				
+		
 		begin
 		i = 0;
 		//repeat(ndades) begin
@@ -111,14 +112,21 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 		@(negedge b_clk)
 				received_dac[31-i] = dacdat;
 				i = i+1;
-				
-				end
-				$display("DAC: received dacdat %h", received_dac);
+								end
+				begin
+   if (received_dac != data_sent) begin
+                                            $display("DACF:Error, recived data %h is not the expected value %h", received_dac, data_sent);
+                                            //error = error +1;
+                                           end
+   else $display("DACFM:Correct, recived data %h is the expected value %h", received_dac, data_sent);
+ end
 		//end
 		 
 		end
 	endtask
 
+
+	
 			
 			/*
 	task dacread;
@@ -147,5 +155,7 @@ module dac_fm(m_clk, b_clk, dac_lr_clk, dacdat);
 		end
 	endtask
 	*/
+	
+	
 	
 endmodule

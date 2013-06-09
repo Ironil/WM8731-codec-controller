@@ -14,9 +14,9 @@ module adc_fm(m_clk, b_clk, adc_lr_clk, adcdat);
 	begin
 	fork
 	begin
-		mesura_m_clk(frequency_m);
+		mesura_m_clk(12500000);
 		mesura_b_clk(frequency_b);
-		mesura_adc_lr_clk(frequency_lr);
+		mesura_adc_lr_clk(frequency_lr);		
 	end
 	join
 	begin
@@ -120,7 +120,7 @@ module adc_fm(m_clk, b_clk, adc_lr_clk, adcdat);
 	 begin
 	adcdat_reg = 0;
 		end
-	
+		
 	assign adcdat = adcdat_reg;
 	
 endmodule
